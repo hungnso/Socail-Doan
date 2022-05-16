@@ -1,18 +1,28 @@
 .message {
   width: 100%;
   height: calc(100vh - 100px);
+  /* height: 100vh; */
   border: 1px solid #ddd;
   margin-top: 15px;
   border-radius: 3px;
   background: #fbfbfb;
 }
+a {
+  text-decoration: none;
+}
+.test99 {
+  text-decoration: none;
+}
+
 .note-message {
   color: rgba(var(--f52, 142, 142, 142), 1);
   font-weight: 400;
   font-size: 14px;
 }
 .modal-wrapper {
-  margin-top: 150px !important;
+  /* margin-top: 150px !important; */
+  /* overflow: hidden; */
+  overflow: hidden;
 }
 .modal-body-search {
   display: flex;
@@ -21,6 +31,16 @@
   padding-bottom: 20px;
   border-bottom: 1px solid #dee2e6;
 }
+/* .modal-body-list {
+  overflow-y: scroll;
+} */
+.modal-body-item {
+}
+
+.modal-content {
+  max-height: 100%;
+}
+
 .modal-body-search span {
   margin-right: 10px;
 }

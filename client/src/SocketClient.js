@@ -22,7 +22,6 @@ const spawnNotification = (body, icon, url, title) => {
 
 const SocketClient = () => {
   const { auth, socket, notify, online, call } = useSelector((state) => state);
-  console.log(auth);
   const dispatch = useDispatch();
 
   const audioRef = useRef();
