@@ -5,7 +5,10 @@ import UserCard from "../../components/UserCard";
 import { MESS_TYPES } from "../../redux/actions/messageAction";
 import { useHistory, useParams } from "react-router-dom";
 import { Button, Modal } from "react-bootstrap";
+import { GLOBALTYPES } from "../../redux/actions/globalTypes";
+
 import "bootstrap/dist/css/bootstrap.min.css";
+import { getDataAPI } from "../../utils/fetchData";
 
 const Message = () => {
   const dispatch = useDispatch();
@@ -13,12 +16,13 @@ const Message = () => {
   const history = useHistory();
 
   const [show, setShow] = useState(false);
+  const [search, setSearch] = useState(false);
+  const [searchUsers, setSearchUsers] = useState([]);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const { auth } = useSelector((state) => state);
   const listSuggestDefault = auth.user.following;
-  console.log(listSuggestDefault);
   const [listSuggest, setListSuggest] = useState(listSuggestDefault);
 
   const handleAddUser = (user) => {
@@ -29,6 +33,29 @@ const Message = () => {
     // dispatch({ type: MESS_TYPES.CHECK_ONLINE_OFFLINE, payload: online });
     return history.push(`/message/${user._id}`);
     setShow(false);
+  };
+  const handleSearch = async (value) => {
+    console.log(value.length);
+    // if (value.length > 0) {
+    //   setSearch(true);
+    // } else {
+    //   setSearchUsers(listSuggestDefault);
+    // }
+
+    try {
+      const res = await getDataAPI(`search?username=${value}`, auth.token);
+      if (value.length > 0) {
+        setSearch(true);
+        setSearchUsers(res.data.users);
+      } else {
+        setSearchUsers(listSuggestDefault);
+      }
+    } catch (err) {
+      dispatch({
+        type: GLOBALTYPES.ALERT,
+        payload: { error: err.response.data.msg },
+      });
+    }
   };
 
   const isActive = (user) => {
@@ -110,14 +137,15 @@ const Message = () => {
                     <input
                       type="text"
                       name="search"
-                      //   value={search}
+                      // value={search}
                       id="search"
                       title="Enter to Search"
-                      //   onChange={(e) =>
-                      //     setSearch(
-                      //       e.target.value.toLowerCase().replace(/ /g, "")
-                      //     )
-                      //   }
+                      onChange={
+                        (e) => handleSearch(e.target.value)
+                        // setSearch(
+                        //   e.target.value.toLowerCase().replace(/ /g, "")
+                        // )
+                      }
                       className="search_input"
                       style={{
                         height: "40px",
@@ -130,17 +158,31 @@ const Message = () => {
                   </div>
                   <div className="modal-body-list mt-3">
                     <p> Gợi ý: </p>
-                    <div className="modal-body-item">
-                      {listSuggest.map((user) => (
-                        <div
-                          key={user._id}
-                          className={`message_user ${isActive(user)}`}
-                          onClick={() => handleAddUser(user)}
-                        >
-                          <UserCard user={user} />
-                        </div>
-                      ))}
-                    </div>
+                    {search === false ? (
+                      <div className="modal-body-item">
+                        {listSuggest.map((user) => (
+                          <div
+                            key={user._id}
+                            className={`message_user ${isActive(user)}`}
+                            onClick={() => handleAddUser(user)}
+                          >
+                            <UserCard user={user} />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="modal-body-item">
+                        {searchUsers.map((user) => (
+                          <div
+                            key={user._id}
+                            className={`message_user ${isActive(user)}`}
+                            onClick={() => handleAddUser(user)}
+                          >
+                            <UserCard user={user} />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </Modal.Body>
               </Modal>
